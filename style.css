@@ -1,0 +1,17 @@
+.parent {
+display: grid;
+grid-template-columns: repeat(8, 1fr);
+grid-template-rows: repeat(5, 1fr);
+grid-column-gap: 0px;
+grid-row-gap: 0px;
+}
+
+.div1 { grid-area: 1 / 1 / 6 / 2; }
+.div2 { grid-area: 1 / 8 / 6 / 9; }
+.div3 { grid-area: 4 / 2 / 6 / 8; }
+.div4 { grid-area: 1 / 2 / 4 / 8; border: 1px solid black}
+
+#sketch {
+  margin: 0 auto;
+  width: 50%;
+}
