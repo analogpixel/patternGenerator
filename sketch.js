@@ -5,7 +5,7 @@ var cy = patternSize /2;
 var shapes = [];
 var gui;
 var current_layer = 0;
-var layer_colors = ['#F0F','#FF0','#0FF'];
+var layer_colors = ['#33A8C7','#52E3E1','#A0E426','#FDF148','#FFAB00','#F77976','#D883FF','#9336FD'];
 
 function Layer() {
   this.origin_x = 0;
@@ -13,43 +13,74 @@ function Layer() {
   this.rotation_offset = 0;
   this.layer_rotation = 0;
   this.num_copies = 4;
-  this.scale = 5;
+  this.scale = 50;
   this.width = 100;
   this.height = 100;
   this.path = "M-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0"
   this.pathSize = 100;
   this.r_offset = 0;
   this.fill = "#F0F";
+  this.layer_path = "";
+  this.xflip = 0;
+  this.yflip = 0;
 }
 
 function map_range(value, low1, high1, low2, high2) {
     return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }
 
+function newLayer() {
+  var t = new Layer();
+  t.fill = layer_colors[ (shapes.length % (layer_colors.length)) ];
+  console.log(t.fill);
+  shapes.push(t);
+  current_layer = shapes.length - 1;
+
+  gui.in_vars = shapes[current_layer];
+  gui.draw();
+  draw_layer();
+  draw();
+}
+
 function init() {
 
 
-  shapes.push( new Layer() );
-  shapes.push( new Layer() );
-
-  shapes[1].fill = "#FF0";
-
-  draw();
   gui = new Gui("guidiv", shapes[current_layer], "update", [
-    ['origin_y', 'slider', 1, [-800,800] ],
-    ['origin_x', 'slider', 1, [-800,800] ],
-    ['rotation_offset', 'slider', 1, [-360,360]],
+    ['origin_y', 'slider', 1, [-1200,1200] ],
+    ['origin_x', 'slider', 1, [-1200,1200] ],
     ['layer_rotation', 'slider', 1, [-360,360]],
     ['num_copies','slider', 1, [1,100]],
-    ['scale', 'slider',  1, [1, 10]],
-    ['width', 'slider', 1,  [0, 200]],
-    ['height', 'slider', 1,  [0, 200]],
-    ['r_offset', 'slider', 1,  [0, 200]]
+    ['scale', 'slider',  1, [1, 150]],
+    ['width', 'slider', 1,  [1, 400]],
+    ['height', 'slider', 1,  [1, 400]],
+    ['r_offset', 'slider', 1,  [0, 360]]
   ]);
-  gui.draw();
-  draw_layer();
+  //gui.draw();
+  //draw_layer();
+  draw_path_selector();
 }
 
+function draw_path_selector() {
+  
+  var pdiv = document.getElementById("paths");
+
+  svg_path_shapes.forEach( (p,idx) => {
+    var svgDiv = document.createElement("div"); 
+    svgDiv.id = `path_${idx}`;
+    svgDiv.onclick = function() {layer_change_shape(idx)};
+    pdiv.appendChild(svgDiv);     
+
+    var path_preview = SVG().addTo(`#path_${idx}`).size(80,80);
+    path_preview.path(p).move(0,0).size(80);
+  });
+
+}
+
+function layer_change_shape(e) {
+  console.log("change shape called", e);
+  shapes[current_layer].layer_path = svg_path_shapes[e]; 
+  draw();
+}
 
 function draw_layer() {
   var h = "";
@@ -83,7 +114,8 @@ function draw() {
 
   svgCanvas.circle(10).center(cx,cy);
   shapes.forEach( (s) => {
-    var layer_shape = svgCanvas.defs().path( svg_path_shapes[0]).move(0,0).size(s.width, s.height);
+    //var layer_shape = svgCanvas.defs().path( svg_path_shapes[0]).move(0,0).size(s.width, s.height);
+    var layer_shape = svgCanvas.defs().path( s.layer_path).move(0,0).size(s.width, s.height);
 
     // get the path to place objects on
     var p = svgCanvas.defs().path( s.path).move(cx-s.pathSize/2, cy-s.pathSize/2).size(s.pathSize, s.pathSize);
@@ -95,9 +127,16 @@ function draw() {
       var point = p.pointAt(j);
       //svgCanvas.rect(10,5).center(point.x, point.y).rotate(r+s.r_offset);
       //svgCanvas.use(path_shapes[0]).move(point.x,point.y);
-      og.use(layer_shape).move(point.x-(s.width/2), point.y-(s.height/2)).rotate(r + s.r_offset).fill(s.fill).dmove(-s.origin_x, -s.origin_y);
+
+      if (i %2 == 0) {
+        var flipvar = "x" ;
+      } else {
+        var flipvar = false;
+      }
+
+      og.use(layer_shape).move(point.x-(s.width/2), point.y-(s.height/2)).transform({flip: flipvar}).rotate(r + s.r_offset).fill(s.fill).dmove(-s.origin_x, -s.origin_y);
     }
-    og.rotate(s.layer_rotation).scale(s.scale*.10); 
+    og.rotate(s.layer_rotation).scale(s.scale*.010); 
   });
 
   

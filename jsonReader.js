@@ -5,6 +5,12 @@ var openFile = function(event) {
   reader.onload = function(){
     var text = reader.result;
     shapes = JSON.parse(text);
+    //gui.in_vars = shapes[current_layer];
+    //draw_layer();
+    //draw();
+    current_layer = shapes.length - 1;
+    gui.in_vars = shapes[current_layer];
+    gui.draw();
     draw_layer();
     draw();
   };
