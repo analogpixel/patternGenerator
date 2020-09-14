@@ -11,8 +11,11 @@ class Gui {
     var h = "";
     this.gui_config.forEach( (config) => {
       switch (config[1]) {
+        case "boolean":
+          h += `<div class="guielement">${config[0]}:<input type=checkbox name="${config[0]}" value="1" onChange="${this.update_function}(this)"></div>`;
+          break;
         case "slider":
-          h += `${config[0]}:<input type=range min="${config[3][0]}" max="${config[3][1]}" value="${this.in_vars[config[0]]}" name="${config[0]}" onInput="${this.update_function}(this)">`;
+          h += `<div class="guielement">${config[0]}:<input type=range min="${config[3][0]}" max="${config[3][1]}" value="${this.in_vars[config[0]]}" name="${config[0]}" onInput="${this.update_function}(this)"></div>`;
 
         break;
         default:

@@ -15,3 +15,9 @@ grid-row-gap: 0px;
   margin: 0 auto;
   width: 50%;
 }
+
+.guielement {
+  display: inline-block;
+  white-space: nowrap;
+}
+

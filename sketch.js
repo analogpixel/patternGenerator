@@ -21,7 +21,7 @@ function Layer() {
   this.r_offset = 0;
   this.fill = "#F0F";
   this.layer_path = "";
-  this.xflip = 0;
+  this.x_flip_odd = 0;
   this.yflip = 0;
 }
 
@@ -53,7 +53,8 @@ function init() {
     ['scale', 'slider',  1, [1, 150]],
     ['width', 'slider', 1,  [1, 400]],
     ['height', 'slider', 1,  [1, 400]],
-    ['r_offset', 'slider', 1,  [0, 360]]
+    ['r_offset', 'slider', 1,  [0, 360]],
+    ['x_flip_odd','boolean',1, [0]]
   ]);
   //gui.draw();
   //draw_layer();
@@ -98,8 +99,28 @@ function layer_update(e) {
 }
 
 function update(e) {
+  console.log(e.type);
   console.log("event:", e.value, e.name);
-  shapes[current_layer][e.name] = parseInt(e.value);
+
+  switch( e.type) {
+  
+    case "range":
+      shapes[current_layer][e.name] = parseInt(e.value);
+      break;
+
+    case "checkbox":
+      if (e.checked) {
+        shapes[current_layer][e.name] = true;
+      } else {
+        shapes[current_layer][e.name] = false;
+      }
+      break;
+
+    default:
+      console.log("oops");
+      break;
+  }
+
   draw();
 }
 
@@ -128,7 +149,7 @@ function draw() {
       //svgCanvas.rect(10,5).center(point.x, point.y).rotate(r+s.r_offset);
       //svgCanvas.use(path_shapes[0]).move(point.x,point.y);
 
-      if (i %2 == 0) {
+      if (i %2 == 0 && s.x_flip_odd) {
         var flipvar = "x" ;
       } else {
         var flipvar = false;
